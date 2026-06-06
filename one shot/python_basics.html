@@ -1,0 +1,893 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,sans-serif)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.app{padding:0 0 48px}
+
+.progress-bar{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap}
+.prog-dot{height:6px;flex:1;min-width:20px;border-radius:3px;background:var(--color-border-tertiary);cursor:pointer;transition:background .2s}
+.prog-dot.done{background:#1D9E75}
+.prog-dot.active{background:#534AB7}
+
+.nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:8px}
+.topic-label{font-size:12px;color:var(--color-text-tertiary);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.topic-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-top:2px}
+.nav-btns{display:flex;gap:8px;flex-shrink:0}
+button{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:13px;cursor:pointer;color:var(--color-text-primary);font-family:inherit;transition:background .15s}
+button:hover{background:var(--color-background-secondary)}
+button:active{transform:scale(0.98)}
+button.primary{background:#534AB7;border-color:#534AB7;color:#EEEDFE}
+button.primary:hover{background:#3C3489}
+button:disabled{opacity:.4;cursor:not-allowed}
+
+.concept-block{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:14px}
+.concept-head{padding:10px 14px;background:var(--color-background-secondary);display:flex;align-items:center;gap:8px}
+.concept-head h3{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.concept-head .why{font-size:11px;color:var(--color-text-tertiary);margin-left:auto;font-style:italic}
+.concept-body{padding:14px}
+
+.explanation{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:12px}
+.explanation strong{color:var(--color-text-primary);font-weight:500}
+
+.code-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);overflow:hidden;margin-bottom:10px}
+.code-label{font-size:11px;color:var(--color-text-tertiary);padding:6px 12px 4px;border-bottom:0.5px solid var(--color-border-tertiary);font-weight:500;letter-spacing:.03em;text-transform:uppercase}
+.code-content{padding:10px 12px;font-family:var(--font-mono,monospace);font-size:12.5px;line-height:1.8;color:var(--color-text-primary);white-space:pre;overflow-x:auto}
+.code-content .comment{color:var(--color-text-tertiary)}
+.code-content .string{color:#0F6E56}
+.code-content .keyword{color:#534AB7;font-weight:500}
+.code-content .output{color:#3B6D11}
+.code-content .num{color:#BA7517}
+.code-content .warn{color:#993C1D}
+
+.mental-model{border-left:3px solid #534AB7;background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.mental-model strong{color:var(--color-text-primary);font-weight:500}
+
+.gotcha{border-left:3px solid #993C1D;background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.gotcha strong{color:#712B13;font-weight:500}
+
+.dsa-link{border-left:3px solid #1D9E75;background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.dsa-link strong{color:#085041;font-weight:500}
+
+.quiz-block{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:14px;margin-top:14px;background:var(--color-background-secondary)}
+.quiz-block h4{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px}
+.quiz-opts{display:flex;flex-direction:column;gap:6px}
+.quiz-opt{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:13px;cursor:pointer;color:var(--color-text-primary);text-align:left;font-family:inherit;transition:all .15s}
+.quiz-opt:hover{border-color:#534AB7;color:#534AB7}
+.quiz-opt.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.quiz-opt.wrong{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.quiz-feedback{font-size:13px;margin-top:8px;padding:8px 12px;border-radius:var(--border-radius-md)}
+.quiz-feedback.ok{background:#E1F5EE;color:#085041}
+.quiz-feedback.no{background:#FCEBEB;color:#501313}
+
+.checklist{list-style:none;padding:0;margin-top:10px}
+.checklist li{font-size:13px;color:var(--color-text-secondary);padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.checklist li:last-child{border-bottom:none}
+.check-icon{color:#1D9E75;font-size:14px;flex-shrink:0;margin-top:1px}
+
+.topic-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tnav-btn{padding:5px 12px;border-radius:20px;border:0.5px solid var(--color-border-tertiary);font-size:12px;cursor:pointer;color:var(--color-text-secondary);background:var(--color-background-secondary);font-family:inherit;transition:all .15s;white-space:nowrap}
+.tnav-btn.cur{background:#534AB7;border-color:#534AB7;color:#EEEDFE;font-weight:500}
+.tnav-btn.done-t{border-color:#1D9E75;color:#085041}
+
+.section-page{display:none}
+.section-page.visible{display:block}
+</style>
+
+<h2 class="sr-only">Interactive Python DSA prerequisites course — 8 topics in learning order</h2>
+
+<div class="app">
+  <div class="topic-nav" id="topicNav"></div>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div id="pages">
+
+    <!-- TOPIC 0: Variables & Types -->
+    <div class="section-page visible" id="page-0">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 1 of 8 — the absolute start</div><div class="topic-title">Variables, types &amp; mutability</div></div>
+        <div class="nav-btns"><button onclick="go(-1)" id="prev-0" disabled>← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>What Python stores in a variable</h3><span class="why">foundation for everything</span></div>
+        <div class="concept-body">
+          <div class="explanation">A variable is just a <strong>label pointing to an object in memory</strong>. Python doesn't care about the type when you declare — the object itself knows its type. This matters for DSA because knowing whether something is <strong>mutable</strong> (can change in place) or <strong>immutable</strong> (cannot change) determines how copying and function arguments behave.</div>
+          <div class="code-block">
+            <div class="code-label">Core types — know all of these</div>
+            <div class="code-content"><span class="comment"># Immutable — cannot be changed after creation</span>
+x = <span class="num">42</span>          <span class="comment"># int</span>
+pi = <span class="num">3.14</span>       <span class="comment"># float</span>
+name = <span class="string">"arif"</span>    <span class="comment"># str</span>
+flag = <span class="keyword">True</span>       <span class="comment"># bool</span>
+t = (<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>)     <span class="comment"># tuple — immutable list</span>
+
+<span class="comment"># Mutable — can change in place (critical for DSA)</span>
+arr = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]   <span class="comment"># list</span>
+d = {<span class="string">"a"</span>: <span class="num">1</span>}      <span class="comment"># dict</span>
+s = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}    <span class="comment"># set</span></div>
+          </div>
+          <div class="mental-model"><strong>Mental model:</strong> Think of a variable as a sticky note on a box. Multiple sticky notes can point to the same box. With mutable objects, editing the box changes it for everyone pointing at it.</div>
+          <div class="code-block">
+            <div class="code-label">The mutation trap — extremely common DSA bug</div>
+            <div class="code-content">a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = a           <span class="comment"># b points to the SAME list</span>
+b.append(<span class="num">4</span>)
+<span class="keyword">print</span>(a)        <span class="output"># [1, 2, 3, 4]  ← a changed too!</span>
+
+<span class="comment"># Fix: make a real copy</span>
+b = a.copy()    <span class="comment"># or a[:]  or list(a)</span>
+b.append(<span class="num">4</span>)
+<span class="keyword">print</span>(a)        <span class="output"># [1, 2, 3]  ← a unchanged</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Type checking &amp; conversion</div>
+            <div class="code-content"><span class="keyword">type</span>(<span class="num">42</span>)          <span class="output"># &lt;class 'int'&gt;</span>
+<span class="keyword">isinstance</span>(<span class="num">42</span>, int)  <span class="output"># True</span>
+<span class="keyword">int</span>(<span class="string">"123"</span>)         <span class="output"># 123</span>
+<span class="keyword">str</span>(<span class="num">42</span>)            <span class="output"># "42"</span>
+<span class="keyword">float</span>(<span class="string">"3.14"</span>)      <span class="output"># 3.14</span>
+<span class="keyword">list</span>((<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>))      <span class="output"># [1, 2, 3]  — tuple to list</span></div>
+          </div>
+          <div class="dsa-link"><strong>DSA connection:</strong> When building DP memoization tables or returning lists from recursion, you MUST use <code>copy()</code> or <code>list(arr)</code> when saving state — otherwise all saved states point to the same mutating list.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q0">
+        <h4>Quick check — what does this print?</h4>
+        <pre style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px;font-family:var(--font-mono,monospace);font-size:12.5px;margin-bottom:10px">x = [1, 2]
+y = x
+y += [3]
+print(x)</pre>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(0,0,false)">[1, 2]</button>
+          <button class="quiz-opt" onclick="answer(0,1,true)">[1, 2, 3]</button>
+          <button class="quiz-opt" onclick="answer(0,2,false)">[3]</button>
+        </div>
+        <div class="quiz-feedback" id="qf0" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 1: Control Flow -->
+    <div class="section-page" id="page-1">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 2 of 8</div><div class="topic-title">Control flow — loops, conditionals, break/continue</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>For loops — the DSA workhorse</h3><span class="why">used in every single algorithm</span></div>
+        <div class="concept-body">
+          <div class="code-block">
+            <div class="code-label">Every loop form you need for DSA</div>
+            <div class="code-content"><span class="comment"># Basic index loop</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="num">5</span>):       <span class="comment"># 0 1 2 3 4</span>
+    <span class="keyword">pass</span>
+
+<span class="comment"># Loop with index AND value — use this often</span>
+arr = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>]
+<span class="keyword">for</span> i, val <span class="keyword">in</span> <span class="keyword">enumerate</span>(arr):
+    <span class="keyword">print</span>(i, val)   <span class="output"># 0 10 / 1 20 / 2 30</span>
+
+<span class="comment"># Reverse loop — common in DSA problems</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(arr)-<span class="num">1</span>, -<span class="num">1</span>, -<span class="num">1</span>):
+    <span class="keyword">print</span>(arr[i])   <span class="output"># 30 20 10</span>
+
+<span class="comment"># Zip — loop two lists in parallel</span>
+a = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>]
+b = [<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>]
+<span class="keyword">for</span> x, y <span class="keyword">in</span> <span class="keyword">zip</span>(a, b):
+    <span class="keyword">print</span>(x+y)      <span class="output"># 5 7 9</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">While loop — essential for two-pointer, binary search</div>
+            <div class="code-content"><span class="comment"># Two-pointer skeleton — you'll write this constantly</span>
+left, right = <span class="num">0</span>, <span class="keyword">len</span>(arr) - <span class="num">1</span>
+<span class="keyword">while</span> left < right:
+    <span class="comment"># do something with arr[left] and arr[right]</span>
+    left += <span class="num">1</span>
+    right -= <span class="num">1</span>
+
+<span class="comment"># Binary search skeleton</span>
+lo, hi = <span class="num">0</span>, <span class="keyword">len</span>(arr) - <span class="num">1</span>
+<span class="keyword">while</span> lo <= hi:
+    mid = (lo + hi) // <span class="num">2</span>
+    <span class="keyword">if</span> arr[mid] == target: <span class="keyword">return</span> mid
+    <span class="keyword">elif</span> arr[mid] < target: lo = mid + <span class="num">1</span>
+    <span class="keyword">else</span>: hi = mid - <span class="num">1</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Break and continue — use deliberately</div>
+            <div class="code-content"><span class="comment"># break — exit loop entirely (e.g., found target)</span>
+<span class="keyword">for</span> i, v <span class="keyword">in</span> <span class="keyword">enumerate</span>(arr):
+    <span class="keyword">if</span> v == target:
+        result = i
+        <span class="keyword">break</span>          <span class="comment"># stop searching</span>
+
+<span class="comment"># continue — skip this iteration</span>
+<span class="keyword">for</span> x <span class="keyword">in</span> arr:
+    <span class="keyword">if</span> x % <span class="num">2</span> == <span class="num">0</span>: <span class="keyword">continue</span>   <span class="comment"># skip evens</span>
+    <span class="keyword">print</span>(x)       <span class="comment"># only odd numbers</span>
+
+<span class="comment"># else on a loop — fires if no break occurred</span>
+<span class="keyword">for</span> x <span class="keyword">in</span> arr:
+    <span class="keyword">if</span> x == target: <span class="keyword">break</span>
+<span class="keyword">else</span>:
+    <span class="keyword">print</span>(<span class="string">"not found"</span>)  <span class="comment"># only if loop didn't break</span></div>
+          </div>
+          <div class="gotcha"><strong>Common bug:</strong> Modifying a list while looping over it. Never do <code>for x in arr: arr.remove(x)</code> — the indices shift under you. Loop over a copy: <code>for x in arr[:]:</code> or collect indices to remove and delete after.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q1">
+        <h4>What does <code>range(4, 0, -1)</code> produce?</h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(1,0,false)">0, 1, 2, 3</button>
+          <button class="quiz-opt" onclick="answer(1,1,true)">4, 3, 2, 1</button>
+          <button class="quiz-opt" onclick="answer(1,2,false)">3, 2, 1, 0</button>
+        </div>
+        <div class="quiz-feedback" id="qf1" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 2: Lists deep dive -->
+    <div class="section-page" id="page-2">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 3 of 8</div><div class="topic-title">Lists — indexing, slicing, methods</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Indexing &amp; slicing — your most-used tool</h3><span class="why">in every array problem</span></div>
+        <div class="concept-body">
+          <div class="code-block">
+            <div class="code-label">All indexing forms</div>
+            <div class="code-content">arr = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>]
+<span class="comment">#       0    1    2    3    4   ← forward index</span>
+<span class="comment">#      -5   -4   -3   -2   -1  ← backward index</span>
+
+arr[<span class="num">0</span>]          <span class="output"># 10  — first element</span>
+arr[-<span class="num">1</span>]         <span class="output"># 50  — last element (critical for DSA)</span>
+arr[-<span class="num">2</span>]         <span class="output"># 40  — second to last</span>
+
+<span class="comment"># Slicing: arr[start:stop:step]  (stop is EXCLUSIVE)</span>
+arr[<span class="num">1</span>:<span class="num">4</span>]         <span class="output"># [20, 30, 40]</span>
+arr[:<span class="num">3</span>]          <span class="output"># [10, 20, 30]  — from start</span>
+arr[<span class="num">2</span>:]          <span class="output"># [30, 40, 50]  — to end</span>
+arr[::-<span class="num">1</span>]        <span class="output"># [50, 40, 30, 20, 10]  — reversed!</span>
+arr[<span class="num">1</span>:<span class="num">4</span>:<span class="num">2</span>]       <span class="output"># [20, 40]  — every 2nd</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Critical list methods — complexity matters</div>
+            <div class="code-content"><span class="comment"># O(1) — fast — use freely</span>
+arr.append(x)     <span class="comment"># add to end</span>
+arr.pop()         <span class="comment"># remove from end</span>
+arr[-<span class="num">1</span>]           <span class="comment"># peek last element</span>
+<span class="keyword">len</span>(arr)          <span class="comment"># length</span>
+
+<span class="comment"># O(n) — slow — use carefully in nested loops</span>
+arr.insert(<span class="num">0</span>, x)  <span class="warn"># O(n) — shifts everything right</span>
+arr.pop(<span class="num">0</span>)        <span class="warn"># O(n) — shifts everything left</span>
+x <span class="keyword">in</span> arr          <span class="warn"># O(n) — linear scan</span>
+arr.remove(x)     <span class="warn"># O(n) — finds then removes</span>
+arr.index(x)      <span class="warn"># O(n) — finds first occurrence</span>
+
+<span class="comment"># Sorting</span>
+arr.sort()        <span class="comment"># in-place, O(n log n)</span>
+arr.sort(reverse=<span class="keyword">True</span>)
+sorted(arr)       <span class="comment"># returns new list, original unchanged</span>
+arr.sort(key=<span class="keyword">lambda</span> x: x[<span class="num">1</span>])  <span class="comment"># sort by index 1</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">List comprehensions — write these fluently</div>
+            <div class="code-content"><span class="comment"># Basic: [expression for item in iterable]</span>
+squares = [x**<span class="num">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> <span class="keyword">range</span>(<span class="num">5</span>)]
+<span class="output"># [0, 1, 4, 9, 16]</span>
+
+<span class="comment"># With filter: [...if condition]</span>
+evens = [x <span class="keyword">for</span> x <span class="keyword">in</span> <span class="keyword">range</span>(<span class="num">10</span>) <span class="keyword">if</span> x % <span class="num">2</span> == <span class="num">0</span>]
+<span class="output"># [0, 2, 4, 6, 8]</span>
+
+<span class="comment"># 2D — creating grids (for matrix problems)</span>
+grid = [[<span class="num">0</span>] * <span class="num">3</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="keyword">range</span>(<span class="num">3</span>)]
+<span class="output"># [[0,0,0],[0,0,0],[0,0,0]]</span>
+
+<span class="warn"># WRONG way — all rows share same list!</span>
+bad = [[<span class="num">0</span>] * <span class="num">3</span>] * <span class="num">3</span>  <span class="warn"># don't do this</span></div>
+          </div>
+          <div class="dsa-link"><strong>DSA connection:</strong> The 2D grid creation pattern is used constantly for DP tables, visited matrices in graph problems, and memoization tables. Always use the list comprehension form, never the <code>* n</code> shortcut.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q2">
+        <h4>What is the time complexity of <code>arr.pop(0)</code> on a list of n elements?</h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(2,0,false)">O(1)</button>
+          <button class="quiz-opt" onclick="answer(2,1,false)">O(log n)</button>
+          <button class="quiz-opt" onclick="answer(2,2,true)">O(n)</button>
+        </div>
+        <div class="quiz-feedback" id="qf2" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 3: Dicts & Sets -->
+    <div class="section-page" id="page-3">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 4 of 8</div><div class="topic-title">Dicts &amp; sets — O(1) lookup power</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Dictionaries — the most important DS for DSA</h3><span class="why">reduces O(n²) → O(n) constantly</span></div>
+        <div class="concept-body">
+          <div class="explanation">Dicts give you O(1) average lookup, insert, and delete. <strong>Any time you're doing a nested loop to check if something exists, a dict can make it a single pass.</strong> This is the single most valuable optimization skill in DSA interviews.</div>
+          <div class="code-block">
+            <div class="code-label">All dict operations</div>
+            <div class="code-content">d = {<span class="string">"a"</span>: <span class="num">1</span>, <span class="string">"b"</span>: <span class="num">2</span>}
+
+<span class="comment"># Access</span>
+d[<span class="string">"a"</span>]            <span class="output"># 1</span>
+d.get(<span class="string">"c"</span>, <span class="num">0</span>)     <span class="output"># 0  — safe: returns default if missing</span>
+
+<span class="comment"># Insert / update</span>
+d[<span class="string">"c"</span>] = <span class="num">3</span>
+
+<span class="comment"># Check existence — O(1)</span>
+<span class="string">"a"</span> <span class="keyword">in</span> d          <span class="output"># True</span>
+
+<span class="comment"># Iterate</span>
+<span class="keyword">for</span> k, v <span class="keyword">in</span> d.items():   <span class="keyword">print</span>(k, v)
+<span class="keyword">for</span> k <span class="keyword">in</span> d.keys():       <span class="keyword">print</span>(k)
+<span class="keyword">for</span> v <span class="keyword">in</span> d.values():     <span class="keyword">print</span>(v)
+
+<span class="comment"># Delete</span>
+<span class="keyword">del</span> d[<span class="string">"a"</span>]
+d.pop(<span class="string">"b"</span>, <span class="keyword">None</span>)   <span class="comment"># safe pop</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">defaultdict &amp; Counter — the DSA essentials from collections</div>
+            <div class="code-content"><span class="keyword">from</span> collections <span class="keyword">import</span> defaultdict, Counter
+
+<span class="comment"># defaultdict — no KeyError, auto-creates default value</span>
+freq = defaultdict(<span class="keyword">int</span>)   <span class="comment"># default 0</span>
+<span class="keyword">for</span> char <span class="keyword">in</span> <span class="string">"hello"</span>:
+    freq[char] += <span class="num">1</span>
+<span class="comment"># {'h':1, 'e':1, 'l':2, 'o':1}</span>
+
+graph = defaultdict(<span class="keyword">list</span>)  <span class="comment"># default []</span>
+graph[<span class="num">0</span>].append(<span class="num">1</span>)        <span class="comment"># adjacency list</span>
+
+<span class="comment"># Counter — counts elements instantly</span>
+c = Counter(<span class="string">"hello"</span>)
+<span class="output"># Counter({'l': 2, 'h': 1, 'e': 1, 'o': 1})</span>
+c.most_common(<span class="num">2</span>)   <span class="output"># [('l', 2), ('h', 1)]</span>
+
+<span class="comment"># Two-sum pattern — the canonical O(n) solution</span>
+<span class="keyword">def</span> two_sum(nums, target):
+    seen = {}
+    <span class="keyword">for</span> i, n <span class="keyword">in</span> <span class="keyword">enumerate</span>(nums):
+        complement = target - n
+        <span class="keyword">if</span> complement <span class="keyword">in</span> seen:
+            <span class="keyword">return</span> [seen[complement], i]
+        seen[n] = i</div>
+          </div>
+          <div class="mental-model"><strong>Mental model:</strong> A dict is like a cloakroom. You give a key (coat ticket), you get back your value instantly — the attendant doesn't search the whole room. This is why it's O(1) and a list scan is O(n).</div>
+        </div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Sets — instant membership testing</h3><span class="why">visited tracking in graph/BFS/DFS</span></div>
+        <div class="concept-body">
+          <div class="code-block">
+            <div class="code-label">Set operations</div>
+            <div class="code-content">s = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+
+s.add(<span class="num">4</span>)             <span class="comment"># O(1)</span>
+s.discard(<span class="num">2</span>)         <span class="comment"># O(1) — no error if missing</span>
+<span class="num">3</span> <span class="keyword">in</span> s               <span class="output"># True — O(1)</span>
+<span class="num">5</span> <span class="keyword">in</span> s               <span class="output"># False — O(1)</span>
+
+<span class="comment"># Convert list → set removes duplicates</span>
+<span class="keyword">list</span>(<span class="keyword">set</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">3</span>]))   <span class="output"># [1, 2, 3] (order not guaranteed)</span>
+
+<span class="comment"># Set math</span>
+a = {<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>}; b = {<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>}
+a & b               <span class="output"># {2, 3}  — intersection</span>
+a | b               <span class="output"># {1,2,3,4} — union</span>
+a - b               <span class="output"># {1}     — difference</span>
+
+<span class="comment"># The visited set pattern — every BFS/DFS uses this</span>
+visited = <span class="keyword">set</span>()
+visited.add(node)
+<span class="keyword">if</span> node <span class="keyword">not in</span> visited: ...  <span class="comment"># O(1) check</span></div>
+          </div>
+          <div class="dsa-link"><strong>DSA connection:</strong> In BFS and DFS, the <code>visited</code> set is what prevents infinite loops. Using a list for visited is O(n) per check; a set makes it O(1). This is the difference between a working solution and a TLE.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q3">
+        <h4>You need to check if a number was seen before in a loop. Which is faster and why?</h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(3,0,false)"><code>if num in seen_list:</code> — list membership</button>
+          <button class="quiz-opt" onclick="answer(3,1,true)"><code>if num in seen_set:</code> — set membership</button>
+          <button class="quiz-opt" onclick="answer(3,2,false)">Same speed for small inputs</button>
+        </div>
+        <div class="quiz-feedback" id="qf3" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 4: Strings -->
+    <div class="section-page" id="page-4">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 5 of 8</div><div class="topic-title">Strings — methods, immutability &amp; tricks</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>String fundamentals for DSA</h3><span class="why">strings are immutable arrays of chars</span></div>
+        <div class="concept-body">
+          <div class="explanation">Strings behave like lists for indexing and slicing but are <strong>immutable</strong> — you cannot change a character in place. This means string concatenation in a loop is O(n²) — you must use <code>join()</code> instead.</div>
+          <div class="code-block">
+            <div class="code-label">Essential string methods</div>
+            <div class="code-content">s = <span class="string">"Hello, World"</span>
+
+<span class="comment"># Case</span>
+s.lower()           <span class="output"># "hello, world"</span>
+s.upper()           <span class="output"># "HELLO, WORLD"</span>
+
+<span class="comment"># Search</span>
+s.find(<span class="string">"World"</span>)      <span class="output"># 7  (index), -1 if not found</span>
+s.startswith(<span class="string">"He"</span>)  <span class="output"># True</span>
+s.endswith(<span class="string">"ld"</span>)    <span class="output"># True</span>
+<span class="string">"World"</span> <span class="keyword">in</span> s        <span class="output"># True</span>
+
+<span class="comment"># Split and join</span>
+<span class="string">"a,b,c"</span>.split(<span class="string">","</span>)  <span class="output"># ['a', 'b', 'c']</span>
+<span class="string">","</span>.join([<span class="string">"a"</span>,<span class="string">"b"</span>])  <span class="output"># "a,b"</span>
+<span class="string">" hello "</span>.strip()   <span class="output"># "hello"</span>
+
+<span class="comment"># Character checks</span>
+<span class="string">"a"</span>.isalpha()        <span class="output"># True</span>
+<span class="string">"3"</span>.isdigit()        <span class="output"># True</span>
+<span class="string">"a3"</span>.isalnum()       <span class="output"># True</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">The immutability trap &amp; the correct join pattern</div>
+            <div class="code-content"><span class="warn"># SLOW — O(n²) — creates a new string every iteration</span>
+result = <span class="string">""</span>
+<span class="keyword">for</span> char <span class="keyword">in</span> chars:
+    result += char   <span class="warn"># bad in tight loops</span>
+
+<span class="comment"># FAST — O(n) — collect into list, join once</span>
+result = <span class="string">""</span>.join(chars)   <span class="comment"># the right way</span>
+
+<span class="comment"># String → list of chars (to "mutate" a string)</span>
+s = <span class="string">"hello"</span>
+chars = <span class="keyword">list</span>(s)      <span class="output"># ['h','e','l','l','o']</span>
+chars[<span class="num">0</span>] = <span class="string">'H'</span>
+<span class="string">""</span>.join(chars)        <span class="output"># "Hello"</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">String tricks used constantly in interviews</div>
+            <div class="code-content"><span class="comment"># Palindrome check — two ways</span>
+s[::-<span class="num">1</span>] == s                  <span class="comment"># simple reverse</span>
+s == s[::-<span class="num">1</span>]
+
+<span class="comment"># Anagram check using sorted or Counter</span>
+sorted(<span class="string">"anagram"</span>) == sorted(<span class="string">"nagaram"</span>)   <span class="output"># True</span>
+Counter(<span class="string">"anagram"</span>) == Counter(<span class="string">"nagaram"</span>) <span class="output"># True</span>
+
+<span class="comment"># ASCII value (for character math problems)</span>
+<span class="keyword">ord</span>(<span class="string">'a'</span>)              <span class="output"># 97</span>
+<span class="keyword">chr</span>(<span class="num">97</span>)               <span class="output"># 'a'</span>
+<span class="keyword">ord</span>(<span class="string">'c'</span>) - <span class="keyword">ord</span>(<span class="string">'a'</span>)  <span class="output"># 2  ← used in trie problems</span>
+
+<span class="comment"># f-strings for debugging in interviews</span>
+<span class="keyword">print</span>(<span class="string">f"left={left}, right={right}, val={arr[left]}"</span>)</div>
+          </div>
+          <div class="dsa-link"><strong>DSA connection:</strong> Sliding window on strings (longest substring without repeats, minimum window substring) uses <code>Counter</code> or <code>defaultdict(int)</code> to maintain a window frequency map — combine what you learned in topic 4 with string iteration.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q4">
+        <h4>Which checks if "abc" is an anagram of "bca" most efficiently?</h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(4,0,false)">Compare char by char in a loop</button>
+          <button class="quiz-opt" onclick="answer(4,1,true)"><code>Counter("abc") == Counter("bca")</code></button>
+          <button class="quiz-opt" onclick="answer(4,2,false)"><code>"abc" == "bca"</code></button>
+        </div>
+        <div class="quiz-feedback" id="qf4" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 5: Functions & Recursion -->
+    <div class="section-page" id="page-5">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 6 of 8</div><div class="topic-title">Functions, scope &amp; recursion basics</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Functions — anatomy &amp; scope</h3><span class="why">every DSA solution is a function</span></div>
+        <div class="concept-body">
+          <div class="code-block">
+            <div class="code-label">Function anatomy &amp; argument types</div>
+            <div class="code-content"><span class="comment"># Basic</span>
+<span class="keyword">def</span> two_sum(nums: list, target: int) -> list:
+    <span class="comment"># type hints are optional but good practice</span>
+    seen = {}
+    <span class="keyword">for</span> i, n <span class="keyword">in</span> <span class="keyword">enumerate</span>(nums):
+        <span class="keyword">if</span> target - n <span class="keyword">in</span> seen:
+            <span class="keyword">return</span> [seen[target-n], i]
+        seen[n] = i
+    <span class="keyword">return</span> []
+
+<span class="comment"># Default arguments</span>
+<span class="keyword">def</span> binary_search(arr, target, lo=<span class="num">0</span>, hi=<span class="keyword">None</span>):
+    <span class="keyword">if</span> hi <span class="keyword">is</span> <span class="keyword">None</span>: hi = <span class="keyword">len</span>(arr) - <span class="num">1</span>
+    <span class="comment"># ...</span>
+
+<span class="comment"># Lambda — for sorting keys</span>
+pairs = [(<span class="num">1</span>,<span class="num">3</span>), (<span class="num">2</span>,<span class="num">1</span>), (<span class="num">0</span>,<span class="num">2</span>)]
+pairs.sort(key=<span class="keyword">lambda</span> p: p[<span class="num">1</span>])   <span class="comment"># sort by second element</span>
+<span class="output"># [(2,1), (0,2), (1,3)]</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Scope — the LEGB rule for DSA</div>
+            <div class="code-content"><span class="comment"># Problem: nested function can't reassign outer variable</span>
+count = <span class="num">0</span>
+<span class="keyword">def</span> increment():
+    count += <span class="num">1</span>    <span class="warn"># UnboundLocalError!</span>
+
+<span class="comment"># Fix 1: use nonlocal (for nested functions in recursion)</span>
+<span class="keyword">def</span> solve():
+    count = <span class="num">0</span>
+    <span class="keyword">def</span> dfs(node):
+        <span class="keyword">nonlocal</span> count
+        count += <span class="num">1</span>
+    <span class="comment"># dfs traversal ...</span>
+    <span class="keyword">return</span> count
+
+<span class="comment"># Fix 2: use a mutable container (list/dict)</span>
+<span class="keyword">def</span> solve():
+    count = [<span class="num">0</span>]    <span class="comment"># mutable — inner func can modify it</span>
+    <span class="keyword">def</span> dfs(node):
+        count[<span class="num">0</span>] += <span class="num">1</span>
+    <span class="keyword">return</span> count[<span class="num">0</span>]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Recursion — the gateway to trees and graphs</h3><span class="why">DFS, backtracking, divide-and-conquer</span></div>
+        <div class="concept-body">
+          <div class="explanation">Every recursive function has exactly two parts: a <strong>base case</strong> (when to stop) and a <strong>recursive call</strong> (a smaller version of the same problem). If you can't identify these two parts instantly, you don't understand the recursion yet.</div>
+          <div class="code-block">
+            <div class="code-label">Three progressively harder examples</div>
+            <div class="code-content"><span class="comment"># 1. Factorial — simplest recursion</span>
+<span class="keyword">def</span> factorial(n):
+    <span class="keyword">if</span> n <= <span class="num">1</span>: <span class="keyword">return</span> <span class="num">1</span>   <span class="comment"># ← base case</span>
+    <span class="keyword">return</span> n * factorial(n-<span class="num">1</span>)    <span class="comment"># ← recursive call</span>
+
+<span class="comment"># 2. Fibonacci with memoization</span>
+<span class="keyword">def</span> fib(n, memo={}):
+    <span class="keyword">if</span> n <= <span class="num">1</span>: <span class="keyword">return</span> n
+    <span class="keyword">if</span> n <span class="keyword">in</span> memo: <span class="keyword">return</span> memo[n]   <span class="comment"># ← cache hit</span>
+    memo[n] = fib(n-<span class="num">1</span>, memo) + fib(n-<span class="num">2</span>, memo)
+    <span class="keyword">return</span> memo[n]
+
+<span class="comment"># 3. Tree DFS — the exact pattern for tree problems</span>
+<span class="keyword">def</span> height(node):
+    <span class="keyword">if</span> node <span class="keyword">is</span> <span class="keyword">None</span>: <span class="keyword">return</span> <span class="num">0</span>  <span class="comment"># ← base case: null node</span>
+    left  = height(node.left)   <span class="comment"># ← recurse left</span>
+    right = height(node.right)  <span class="comment"># ← recurse right</span>
+    <span class="keyword">return</span> <span class="num">1</span> + <span class="keyword">max</span>(left, right)</div>
+          </div>
+          <div class="mental-model"><strong>Mental model for writing any recursion:</strong> (1) Trust that the function works for smaller inputs — don't trace through the call stack. (2) Write the base case(s) first. (3) Write the recursive case assuming the function already works. If you try to mentally trace a deep recursion, you'll confuse yourself every time.</div>
+          <div class="gotcha"><strong>Stack overflow warning:</strong> Python's default recursion limit is ~1000. For problems with depth > 1000 (deep graphs), use <code>sys.setrecursionlimit(10000)</code> at the start, or convert to iterative with an explicit stack.</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q5">
+        <h4>What are the two required parts of every recursive function?</h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(5,0,false)">A loop and a return statement</button>
+          <button class="quiz-opt" onclick="answer(5,1,true)">A base case and a recursive call on a smaller input</button>
+          <button class="quiz-opt" onclick="answer(5,2,false)">A helper function and memoization</button>
+        </div>
+        <div class="quiz-feedback" id="qf5" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 6: complexity -->
+    <div class="section-page" id="page-6">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 7 of 8</div><div class="topic-title">Big-O complexity — thinking in time &amp; space</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button class="primary" onclick="go(1)">Next →</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>Reading code for complexity</h3><span class="why">every interview answer needs this</span></div>
+        <div class="concept-body">
+          <div class="explanation">Big-O measures how runtime grows as input size n grows. You are expected to state time AND space complexity at the end of every interview solution — unprompted.</div>
+          <div class="code-block">
+            <div class="code-label">Complexity from code patterns — learn to read this instantly</div>
+            <div class="code-content"><span class="comment"># O(1) — no loop, constant work</span>
+<span class="keyword">return</span> arr[-<span class="num">1</span>]
+
+<span class="comment"># O(log n) — input halved each step</span>
+<span class="keyword">while</span> lo <= hi:
+    mid = (lo + hi) // <span class="num">2</span>   <span class="comment"># binary search</span>
+    ...
+
+<span class="comment"># O(n) — one loop over input</span>
+<span class="keyword">for</span> x <span class="keyword">in</span> arr: ...
+
+<span class="comment"># O(n log n) — sort, or loop + binary search inside</span>
+arr.sort()   <span class="comment"># always O(n log n)</span>
+
+<span class="comment"># O(n²) — nested loops over same input</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> arr:
+    <span class="keyword">for</span> j <span class="keyword">in</span> arr:  <span class="warn"># nested = multiply complexities</span>
+        ...
+
+<span class="comment"># O(2ⁿ) — recursion where each call branches twice</span>
+<span class="keyword">def</span> fib(n):
+    <span class="keyword">return</span> fib(n-<span class="num">1</span>) + fib(n-<span class="num">2</span>)  <span class="warn"># exponential without memo</span></div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Space complexity — the other half</div>
+            <div class="code-content"><span class="comment"># O(1) space — only variables, no extra structures</span>
+lo, hi = <span class="num">0</span>, <span class="keyword">len</span>(arr)-<span class="num">1</span>
+
+<span class="comment"># O(n) space — storing n elements</span>
+seen = {}                  <span class="comment"># up to n entries</span>
+result = [x**<span class="num">2</span> <span class="keyword">for</span> x <span class="keyword">in</span> arr]  <span class="comment"># n elements</span>
+
+<span class="comment"># O(n) space — recursion call stack depth n</span>
+<span class="keyword">def</span> dfs(node):             <span class="comment"># call stack = tree height</span>
+    <span class="keyword">if</span> <span class="keyword">not</span> node: <span class="keyword">return</span>
+    dfs(node.left)
+    dfs(node.right)
+
+<span class="comment"># O(n*m) space — 2D DP table</span>
+dp = [[<span class="num">0</span>]*(m+<span class="num">1</span>) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="keyword">range</span>(n+<span class="num">1</span>)]</div>
+          </div>
+          <div class="code-block">
+            <div class="code-label">The optimization move — hash map eliminates nested loop</div>
+            <div class="code-content"><span class="comment"># Two Sum — O(n²) naive</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">range</span>(<span class="keyword">len</span>(nums)):
+    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="keyword">range</span>(i+<span class="num">1</span>, <span class="keyword">len</span>(nums)):
+        <span class="keyword">if</span> nums[i] + nums[j] == target:
+            <span class="keyword">return</span> [i, j]
+
+<span class="comment"># Two Sum — O(n) optimized with hash map</span>
+seen = {}
+<span class="keyword">for</span> i, n <span class="keyword">in</span> <span class="keyword">enumerate</span>(nums):
+    <span class="keyword">if</span> target-n <span class="keyword">in</span> seen: <span class="keyword">return</span> [seen[target-n], i]
+    seen[n] = i
+<span class="comment"># O(n) time, O(n) space — classic tradeoff</span></div>
+          </div>
+          <div class="mental-model"><strong>Rule of thumb for interviews:</strong> n=10⁸ operations per second. O(n) with n=10⁶ → ~0.01s fine. O(n²) with n=10⁴ → 10⁸ ops → borderline. O(n²) with n=10⁶ → 10¹² ops → TLE (Time Limit Exceeded). Always ask: what's the constraint on n?</div>
+        </div>
+      </div>
+
+      <div class="quiz-block" id="q6">
+        <h4>What is the time complexity of this code?<br><code style="font-size:12px">for i in range(n):<br>&nbsp;&nbsp;for j in range(i, n):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i, j)</code></h4>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="answer(6,0,false)">O(n)</button>
+          <button class="quiz-opt" onclick="answer(6,1,true)">O(n²)</button>
+          <button class="quiz-opt" onclick="answer(6,2,false)">O(log n)</button>
+        </div>
+        <div class="quiz-feedback" id="qf6" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- TOPIC 7: Final — putting it together -->
+    <div class="section-page" id="page-7">
+      <div class="nav-row">
+        <div><div class="topic-label">Topic 8 of 8 — the test</div><div class="topic-title">Putting it all together — 5 test problems</div></div>
+        <div class="nav-btns"><button onclick="go(-1)">← Back</button><button disabled>Done</button></div>
+      </div>
+
+      <div class="concept-block">
+        <div class="concept-head"><h3>You're ready for Phase 1 DSA if you can solve these</h3><span class="why">honest self-assessment</span></div>
+        <div class="concept-body">
+          <div class="explanation">Before moving to actual DSA problems (arrays, two pointers, etc.), verify you can solve all 5 of these from scratch — no hints, no IDE. They test every prerequisite topic. If any trips you up, revisit that topic.</div>
+
+          <div class="code-block">
+            <div class="code-label">Problem 1 — lists + loops (should be easy)</div>
+            <div class="code-content"><span class="comment"># Given a list of numbers, return a new list</span>
+<span class="comment"># containing only the unique elements, preserving order.</span>
+<span class="comment"># Input: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]</span>
+<span class="comment"># Output: [3, 1, 4, 5, 9, 2, 6]</span>
+
+<span class="comment"># Answer — set for O(1) lookup, list to preserve order</span>
+<span class="keyword">def</span> unique_ordered(arr):
+    seen = <span class="keyword">set</span>()
+    result = []
+    <span class="keyword">for</span> x <span class="keyword">in</span> arr:
+        <span class="keyword">if</span> x <span class="keyword">not in</span> seen:
+            result.append(x)
+            seen.add(x)
+    <span class="keyword">return</span> result
+<span class="comment"># Time: O(n)  Space: O(n)</span></div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">Problem 2 — dict + string</div>
+            <div class="code-content"><span class="comment"># Return the first non-repeating character in a string.</span>
+<span class="comment"># Input: "leetcode"   Output: "l"</span>
+<span class="comment"># Input: "aabb"       Output: ""</span>
+
+<span class="keyword">def</span> first_unique(s):
+    count = Counter(s)
+    <span class="keyword">for</span> c <span class="keyword">in</span> s:
+        <span class="keyword">if</span> count[c] == <span class="num">1</span>: <span class="keyword">return</span> c
+    <span class="keyword">return</span> <span class="string">""</span>
+<span class="comment"># Time: O(n)  Space: O(1) — at most 26 entries</span></div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">Problem 3 — two pointers + while loop</div>
+            <div class="code-content"><span class="comment"># Check if a string is a palindrome ignoring non-alphanumeric.</span>
+<span class="comment"># Input: "A man, a plan, a canal: Panama"  Output: True</span>
+
+<span class="keyword">def</span> is_palindrome(s):
+    s = s.lower()
+    left, right = <span class="num">0</span>, <span class="keyword">len</span>(s) - <span class="num">1</span>
+    <span class="keyword">while</span> left < right:
+        <span class="keyword">while</span> left < right <span class="keyword">and not</span> s[left].isalnum():
+            left += <span class="num">1</span>
+        <span class="keyword">while</span> left < right <span class="keyword">and not</span> s[right].isalnum():
+            right -= <span class="num">1</span>
+        <span class="keyword">if</span> s[left] != s[right]: <span class="keyword">return</span> <span class="keyword">False</span>
+        left += <span class="num">1</span>; right -= <span class="num">1</span>
+    <span class="keyword">return</span> <span class="keyword">True</span>
+<span class="comment"># Time: O(n)  Space: O(1)</span></div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">Problem 4 — recursion</div>
+            <div class="code-content"><span class="comment"># Count the number of ways to climb n stairs</span>
+<span class="comment"># (1 or 2 steps at a time). This is exactly Fibonacci.</span>
+<span class="comment"># Input: n=4   Output: 5</span>
+
+<span class="keyword">def</span> climb_stairs(n, memo={}):
+    <span class="keyword">if</span> n <= <span class="num">2</span>: <span class="keyword">return</span> n
+    <span class="keyword">if</span> n <span class="keyword">in</span> memo: <span class="keyword">return</span> memo[n]
+    memo[n] = climb_stairs(n-<span class="num">1</span>, memo) + climb_stairs(n-<span class="num">2</span>, memo)
+    <span class="keyword">return</span> memo[n]
+<span class="comment"># Time: O(n)  Space: O(n)</span></div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">Problem 5 — complexity analysis</div>
+            <div class="code-content"><span class="comment"># State the time and space complexity of this function.</span>
+<span class="keyword">def</span> find_pairs(nums, target):
+    result = []
+    seen = <span class="keyword">set</span>()
+    <span class="keyword">for</span> n <span class="keyword">in</span> nums:
+        <span class="keyword">if</span> target - n <span class="keyword">in</span> seen:
+            result.append((target-n, n))
+        seen.add(n)
+    <span class="keyword">return</span> result
+
+<span class="comment"># Answer:</span>
+<span class="output"># Time:  O(n) — one loop, O(1) set operations</span>
+<span class="output"># Space: O(n) — seen set can hold all n elements</span></div>
+          </div>
+
+          <div class="dsa-link">
+            <strong>You're ready for Phase 1 DSA when:</strong> you can write all 5 above without looking up syntax, you can state complexity for any code you write, and you can code without IDE autocomplete (for interview conditions).
+          </div>
+
+          <ul class="checklist" style="margin-top:16px">
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Variables, mutability — can explain why copying a list matters</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Loops — can write for/while with index, enumerate, zip, reverse range</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Lists — slicing, all methods with their complexity, 2D grid creation</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Dict/Set — defaultdict, Counter, O(1) lookup, visited set pattern</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Strings — immutability, join pattern, anagram/palindrome tricks</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Functions — lambda, nonlocal, recognizing base case + recursive call</li>
+            <li><span class="check-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></span>Complexity — read code → state O(n), O(n²), O(log n) instantly</li>
+          </ul>
+
+          <div style="margin-top:16px">
+            <button class="primary" onclick="sendPrompt('Now teach me Phase 1 DSA: arrays and the two-pointer pattern with problems')">Start Phase 1 DSA — arrays &amp; two pointers ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const titles=["Variables & types","Control flow","Lists","Dicts & sets","Strings","Functions & recursion","Big-O complexity","Putting it together"];
+let cur=0;
+const total=8;
+const done=new Array(total).fill(false);
+
+function buildNav(){
+  const nb=document.getElementById('topicNav');
+  nb.innerHTML='';
+  titles.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='tnav-btn'+(i===cur?' cur':done[i]?' done-t':'');
+    b.textContent=(i+1)+'. '+t;
+    b.onclick=()=>jumpTo(i);
+    nb.appendChild(b);
+  });
+}
+
+function buildProgress(){
+  const pb=document.getElementById('progressBar');
+  pb.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='prog-dot'+(i===cur?' active':done[i]?' done':'');
+    d.title=titles[i];
+    d.onclick=()=>jumpTo(i);
+    pb.appendChild(d);
+  }
+}
+
+function jumpTo(n){
+  document.getElementById('page-'+cur).classList.remove('visible');
+  cur=n;
+  document.getElementById('page-'+cur).classList.add('visible');
+  buildNav();buildProgress();
+  window.scrollTo(0,0);
+}
+
+function go(dir){
+  done[cur]=true;
+  const next=cur+dir;
+  if(next<0||next>=total)return;
+  document.getElementById('page-'+cur).classList.remove('visible');
+  cur=next;
+  document.getElementById('page-'+cur).classList.add('visible');
+  buildNav();buildProgress();
+  window.scrollTo(0,0);
+}
+
+const explanations={
+  '0-1':'Correct. y = x makes y point to the same list. y += [3] mutates it in place — so x sees the change too.',
+  '0-0':'Not quite. y points to the same list as x. Mutating y via += changes the shared object.',
+  '0-2':'Not quite. += on a list appends [3] to the shared list.',
+  '1-1':'Correct. range(4, 0, -1) counts from 4 down to 1 (stop is exclusive).',
+  '1-0':'Not quite. range(4,0,-1) starts at 4, not 0.',
+  '1-2':'Not quite. It stops at 1, not 0, since stop=0 is exclusive.',
+  '2-2':'Correct. pop(0) removes from the front — all remaining elements shift left, costing O(n). Use collections.deque for O(1) front removal.',
+  '2-0':'Not quite. pop() from the end is O(1), but pop(0) from the front requires shifting n-1 elements.',
+  '2-1':'Not quite. It\'s linear — O(n) — not logarithmic.',
+  '3-1':'Correct. Set membership is O(1) because sets use hash tables, just like dicts. List membership is O(n) — it scans every element.',
+  '3-0':'Not quite. List membership is O(n) — Python scans from the beginning until it finds a match.',
+  '3-2':'Not quite. For small inputs the difference is invisible, but for n=10,000+ it becomes critical in DSA.',
+  '4-1':'Correct. Counter builds a frequency map in O(n) and comparison is O(k) where k is the number of unique chars — very efficient.',
+  '4-0':'Not quite. This would be O(n) but you\'d need to sort or count first to handle duplicates correctly.',
+  '4-2':'Not quite. String equality checks character positions — "abc" != "bca" even though they\'re anagrams.',
+  '5-1':'Correct. Every recursive function must (1) know when to stop (base case) and (2) call itself on a smaller input. Without a base case it recurses forever.',
+  '5-0':'Not quite. Loops and return statements are part of regular functions too — the distinguishing feature of recursion is the self-call on a smaller input.',
+  '5-2':'Not quite. Memoization is an optimization, not a requirement. A simple factorial recursion has no helper function or memo.',
+  '6-1':'Correct. Even though the inner loop starts at i (not 0), the total iterations are n + (n-1) + ... + 1 = n(n+1)/2, which is O(n²).',
+  '6-0':'Not quite. Two nested loops over n elements multiply — O(n) × O(n) = O(n²), even when the inner loop doesn\'t always run n times.',
+  '6-2':'Not quite. O(log n) requires halving the search space each step, like binary search. Nested loops grow quadratically.'
+};
+
+function answer(qid, optIdx, correct){
+  const opts=document.querySelectorAll('#q'+qid+' .quiz-opt');
+  const fb=document.getElementById('qf'+qid);
+  opts.forEach(o=>{o.disabled=true;o.style.cursor='default'});
+  opts[optIdx].className='quiz-opt '+(correct?'correct':'wrong');
+  if(correct){
+    const rightIdx=Array.from(opts).findIndex(o=>o.className.includes('correct'));
+  }
+  fb.style.display='block';
+  fb.className='quiz-feedback '+(correct?'ok':'no');
+  const key=qid+'-'+optIdx;
+  fb.textContent=explanations[key]||(correct?'Correct!':'Not quite — review the concept above.');
+}
+
+buildNav();buildProgress();
+</script>
