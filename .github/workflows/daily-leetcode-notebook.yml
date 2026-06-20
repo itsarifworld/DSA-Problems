@@ -1,0 +1,64 @@
+name: Daily LeetCode Notebook
+
+on:
+  schedule:
+    # 03:30 UTC is 09:00 IST.
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-leetcode-notebook
+  cancel-in-progress: false
+
+jobs:
+  create-notebook:
+    name: Create and push notebook
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Codex
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/prompts/daily-leetcode-notebook.md
+          output-file: codex-output.md
+          sandbox: danger-full-access
+          effort: high
+
+      - name: Commit and push notebook
+        shell: bash
+        run: |
+          changed_notebooks="$(git status --porcelain -- '*.ipynb' ':(glob)**/*.ipynb')"
+
+          if [[ -z "$changed_notebooks" ]]; then
+            echo "Codex did not create a notebook."
+            if [[ -f codex-output.md ]]; then
+              cat codex-output.md
+            fi
+            exit 1
+          fi
+
+          git add -- '*.ipynb' ':(glob)**/*.ipynb'
+          notebook_paths="$(git diff --cached --name-only -- '*.ipynb' ':(glob)**/*.ipynb')"
+          first_notebook="$(printf '%s\n' "$notebook_paths" | head -n 1)"
+
+          git commit -m "Add ${first_notebook}"
+          git push
+
+          echo "problem pushed successfully"
+          echo "problem pushed successfully" >> "$GITHUB_STEP_SUMMARY"
